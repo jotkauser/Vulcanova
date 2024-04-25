@@ -51,14 +51,18 @@ public class ReactiveExceptionHandler : IObserver<Exception>
 
         static void HandleError(ExceptionDescriptor descriptor)
         {
-            try
-            {
-                RxApp.MainThreadScheduler.Schedule(() => Interactions.Errors.Handle(descriptor).Subscribe());
-            }
-            catch
-            {
-                // ignored
-            }
+            RxApp.MainThreadScheduler.Schedule(() =>
+                {
+                    try
+                    {
+                        Interactions.Errors.Handle(descriptor).Subscribe();
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+            );
         }
     }
 
