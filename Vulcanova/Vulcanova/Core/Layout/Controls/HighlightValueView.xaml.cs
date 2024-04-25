@@ -23,6 +23,26 @@ public partial class HighlightValueView
         get => (string) GetValue(ValueProperty);
         set => SetValue(ValueProperty, value);
     }
+
+    public static readonly BindableProperty ValueAdornmentProperty =
+        BindableProperty.Create(nameof(ValueAdornment), typeof(View), typeof(HighlightValueView));
+
+    public View ValueAdornment
+    {
+        get => (View)GetValue(ValueAdornmentProperty);
+        set => SetValue(ValueAdornmentProperty, value);
+    }
+
+    protected override void OnBindingContextChanged()
+    {
+        base.OnBindingContextChanged();
+
+        var valueAdornment = ValueAdornment;
+        if (valueAdornment != null)
+        {
+            SetInheritedBindingContext(valueAdornment, BindingContext);
+        }
+    }
     
     public HighlightValueView()
     {

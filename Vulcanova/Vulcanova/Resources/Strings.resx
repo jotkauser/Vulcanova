@@ -399,4 +399,13 @@
     <data name="SettingsAboutContact" xml:space="preserve">
         <value>Contact app developer</value>
     </data>
+    <data name="GradesAnnualAverageLabel" xml:space="preserve">
+        <value>Annual average</value>
+    </data>
+    <data name="AnnualAverageRemarksDialogTitle" xml:space="preserve">
+        <value>Annual average</value>
+    </data>
+    <data name="AnnualAverageRemarksDialogMessage" xml:space="preserve">
+        <value>Annual average is calculated by the app as this value is not provided by the register. The values for +/- grade modifiers used for calculations can be configured in app settings.</value>
+    </data>
 </root>

@@ -399,4 +399,13 @@
     <data name="SettingsAboutContact" xml:space="preserve">
         <value>Kontakt z twórcą</value>
     </data>
+    <data name="GradesAnnualAverageLabel" xml:space="preserve">
+        <value>Średnia roczna</value>
+    </data>
+    <data name="AnnualAverageRemarksDialogTitle" xml:space="preserve">
+        <value>Średnia roczna</value>
+    </data>
+    <data name="AnnualAverageRemarksDialogMessage" xml:space="preserve">
+        <value>Średnia roczna jest liczona przez aplikację, gdyż wartość ta nie jest udostępniana przez dziennik. Przyjęte do obliczeń wartości modyfikatorów ocen + oraz - mogą zostać zmienione w ustawieniach aplikacji.</value>
+    </data>
 </root>

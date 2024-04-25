@@ -8,8 +8,11 @@
         <StackLayout BindingContext="{x:Reference View}" Spacing="2">
             <Label Text="{Binding Name}" TextTransform="Uppercase" FontAttributes="Bold"
                    FontSize="Small"
-                   TextColor="{AppThemeBinding Dark={StaticResource DarkSecondaryTextColor}, Light={StaticResource LightSecondaryTextColor}}"/>
-            <Label Text="{Binding Value}" TextTransform="Uppercase" FontAttributes="Bold" />
+                   TextColor="{AppThemeBinding Dark={StaticResource DarkSecondaryTextColor}, Light={StaticResource LightSecondaryTextColor}}" />
+            <StackLayout Orientation="Horizontal">
+                <Label Text="{Binding Value}" TextTransform="Uppercase" FontAttributes="Bold" />
+                <ContentView Content="{Binding ValueAdornment}" />
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentView>

@@ -7,4 +7,8 @@ namespace Vulcanova.Features.Grades;
 public interface IGradesService
 {
     IObservable<IEnumerable<Grade>> GetPeriodGrades(Account account, int periodId, bool forceSync = false);
+
+    IObservable<IEnumerable<PeriodGrades>> GetSameLevelPeriodsGrades(Account account,
+        int periodId,
+        bool forceSync = false);
 }

@@ -46,7 +46,7 @@ public class GradesSummaryViewModel : ViewModelBase
         GetGrades = ReactiveCommand.CreateFromObservable((bool forceSync) =>
         {
             var grades = gradesService
-                .GetPeriodGrades(accountContext.Account, PeriodId!.Value, forceSync);
+                .GetSameLevelPeriodsGrades(accountContext.Account, PeriodId!.Value, forceSync);
 
             var averageGrades =
                 accountContext.Account.Capabilities.Contains(AccountCapabilities.GradesAverageEnabled)
@@ -91,7 +91,7 @@ public class GradesSummaryViewModel : ViewModelBase
             .Subscribe(values =>
             {
                 var (grades, _) = values;
-                Grades = ToSubjectGrades(grades.Grades, grades.AverageGrades, settings);
+                Grades = ToSubjectGrades(PeriodId!.Value, grades.PeriodGrades, grades.AverageGrades, settings);
             });
         
         this.WhenAnyValue(vm => vm.RawGrades)
@@ -99,7 +99,10 @@ public class GradesSummaryViewModel : ViewModelBase
             .CombineLatest(modifiersObservable)
             .Subscribe(values =>
             {
-                PartialGradesAverage = values.First.Grades.Average(settings.Modifiers);
+                PartialGradesAverage = values.First.PeriodGrades
+                    .Where(g => g.PeriodId == PeriodId!.Value)
+                    .SelectMany(g => g.Grades)
+                    .Average(settings.Modifiers);
             });
 
         this.WhenAnyValue(vm => vm.Grades, vm => vm.PartialGradesAverage)
@@ -108,19 +111,45 @@ public class GradesSummaryViewModel : ViewModelBase
             .ToPropertyEx(this, vm => vm.GradeItems);
     }
 
-    private static IEnumerable<SubjectGrades> ToSubjectGrades(IEnumerable<Grade> grades, IEnumerable<AverageGrade> averageGrades, AppSettings settings)
-        => grades.GroupBy(g => new
+    private static IEnumerable<SubjectGrades> ToSubjectGrades(int selectedPeriodId,
+        IEnumerable<PeriodGrades> periodGrades, IEnumerable<AverageGrade> averageGrades,
+        AppSettings settings)
+    {
+        var averageGradesArray = averageGrades as AverageGrade[] ?? averageGrades.ToArray();
+
+        var groupedGrades = periodGrades
+            .SelectMany(x => x.Grades.Select(g => new
             {
-                g.Column.Subject.Id,
-                g.Column.Subject.Name
-            })
-            .Select(g => new SubjectGrades
+                Grade = g,
+                x.PeriodId
+            }))
+            .GroupBy(x => new
             {
-                SubjectId = g.Key.Id,
-                SubjectName = g.Key.Name,
-                Average = CalculateAverage(g.Key.Id, g, averageGrades, settings),
-                Grades = new ObservableCollection<Grade>(g.ToArray())
+                x.Grade.Column.Subject.Id,
+                x.Grade.Column.Subject.Name,
             });
+
+        return groupedGrades
+            .Select(g =>
+            {
+                var selectedPeriodGrades = g
+                    .Where(x => x.PeriodId == selectedPeriodId)
+                    .Select(x => x.Grade)
+                    .ToArray();
+
+                return new SubjectGrades
+                {
+                    SubjectId = g.Key.Id,
+                    SubjectName = g.Key.Name,
+                    Average = CalculateAverage(g.Key.Id, selectedPeriodGrades, averageGradesArray, settings),
+                    AnnualAverage = CalculateAverage(g.Key.Id,
+                        g.Select(x => x.Grade), averageGradesArray,
+                        settings),
+                    Grades = new ObservableCollection<Grade>(selectedPeriodGrades)
+                };
+            })
+            .Where(x => x.Grades.Count > 0);
+    }
 
     private static decimal? CalculateAverage(int subjectId, IEnumerable<Grade> grades,
         IEnumerable<AverageGrade> averageGrades, AppSettings settings)
@@ -134,5 +163,5 @@ public class GradesSummaryViewModel : ViewModelBase
             .SingleOrDefault(x => x.SubjectId == subjectId)?.Average ?? grades.Average(settings.Modifiers);
     }
 
-    public sealed record GradesResult(IEnumerable<Grade> Grades, IEnumerable<AverageGrade> AverageGrades);
+    public sealed record GradesResult(IEnumerable<PeriodGrades> PeriodGrades, IEnumerable<AverageGrade> AverageGrades);
 }

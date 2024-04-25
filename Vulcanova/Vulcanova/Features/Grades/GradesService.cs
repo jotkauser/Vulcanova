@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Vulcanova.Core.Uonet;
-using Vulcanova.Features.Auth;
 using Vulcanova.Features.Auth.Accounts;
 using Vulcanova.Uonet.Api;
 using Vulcanova.Uonet.Api.Grades;
@@ -59,6 +58,18 @@ public class GradesService : UonetResourceProvider, IGradesService
         });
     }
 
+    public IObservable<IEnumerable<PeriodGrades>> GetSameLevelPeriodsGrades(
+        Account account, int periodId, bool forceSync = false)
+    {
+        var period = account.Periods.Single(x => x.Id == periodId);
+
+        var observables = account.Periods
+            .Where(p => p.Level == period.Level)
+            .Select(p => GetPeriodGrades(account, p.Id, forceSync).Select(x => new PeriodGrades(p.Id, x)));
+
+        return observables.CombineLatest(x => x);
+    }
+
     private async Task<Grade[]> FetchPeriodGradesAsync(Account account, int periodId)
     {
         var client = await _apiClientFactory.GetAuthenticatedAsync(account);
@@ -101,3 +112,5 @@ public class GradesService : UonetResourceProvider, IGradesService
 
     protected override TimeSpan OfflineDataLifespan => TimeSpan.FromMinutes(15);
 }
+
+public sealed record PeriodGrades(int PeriodId, IEnumerable<Grade> Grades);

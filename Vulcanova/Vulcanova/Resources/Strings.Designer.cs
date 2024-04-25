@@ -818,5 +818,23 @@ namespace Vulcanova.Resources {
                 return ResourceManager.GetString("SettingsAboutContact", resourceCulture);
             }
         }
+        
+        internal static string GradesAnnualAverageLabel {
+            get {
+                return ResourceManager.GetString("GradesAnnualAverageLabel", resourceCulture);
+            }
+        }
+        
+        internal static string AnnualAverageRemarksDialogTitle {
+            get {
+                return ResourceManager.GetString("AnnualAverageRemarksDialogTitle", resourceCulture);
+            }
+        }
+        
+        internal static string AnnualAverageRemarksDialogMessage {
+            get {
+                return ResourceManager.GetString("AnnualAverageRemarksDialogMessage", resourceCulture);
+            }
+        }
     }
 }

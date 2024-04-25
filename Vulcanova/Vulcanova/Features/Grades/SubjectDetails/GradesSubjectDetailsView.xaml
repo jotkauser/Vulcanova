@@ -34,22 +34,41 @@
                    Margin="{OnPlatform iOS='0,0,32,0'}"
                    LineBreakMode="TailTruncation"
                    Text="{Binding Subject.SubjectName}" />
-            <StackLayout Orientation="Horizontal" Spacing="16" Padding="16, 0">
-                <controls:HighlightValueView Name="{x:Static resx:Strings.GradesAverageLabel}"
-                                             Value="{Binding Subject.Average, StringFormat='{0:F2}'}" />
-                <Frame HasShadow="False" Padding="0, 10" Margin="0">
-                    <BoxView WidthRequest="1" HeightRequest="2"
-                             BackgroundColor="{AppThemeBinding Dark={StaticResource DarkSecondaryTextColor}, Light={StaticResource LightSecondaryTextColor}}" />
-                </Frame>
-                <controls:HighlightValueView Name="{x:Static resx:Strings.GradesCountLabel}"
-                                             Value="{Binding Subject.Grades.Count}" />
-            </StackLayout>
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <StackLayout Orientation="Horizontal" Spacing="16" Padding="16, 0">
+                    <controls:HighlightValueView Name="{x:Static resx:Strings.GradesAverageLabel}"
+                                                 Value="{Binding Subject.Average, StringFormat='{0:F2}'}" />
+                    <Frame HasShadow="False" Padding="0, 10" Margin="0">
+                        <BoxView WidthRequest="1" HeightRequest="2"
+                                 BackgroundColor="{AppThemeBinding Dark={StaticResource DarkSecondaryTextColor}, Light={StaticResource LightSecondaryTextColor}}" />
+                    </Frame>
+                    <controls:HighlightValueView Name="{x:Static resx:Strings.GradesAnnualAverageLabel}"
+                                                 Value="{Binding Subject.AnnualAverage, StringFormat='{0:F2}'}">
+                        <controls:HighlightValueView.ValueAdornment>
+                            <layout:TintedCachedImage
+                                WidthRequest="24"
+                                Source="resource://Vulcanova.Resources.Icons.help-circle-outline.svg"
+                                TintColor="{AppThemeBinding Light={StaticResource LightPrimaryTextColor}, Dark={StaticResource DarkPrimaryTextColor}}">
+                                <layout:TintedCachedImage.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ShowAnnualAverageRemarks}" />
+                                </layout:TintedCachedImage.GestureRecognizers>
+                            </layout:TintedCachedImage>
+                        </controls:HighlightValueView.ValueAdornment>
+                    </controls:HighlightValueView>
+                    <Frame HasShadow="False" Padding="0, 10" Margin="0">
+                        <BoxView WidthRequest="1" HeightRequest="2"
+                                 BackgroundColor="{AppThemeBinding Dark={StaticResource DarkSecondaryTextColor}, Light={StaticResource LightSecondaryTextColor}}" />
+                    </Frame>
+                    <controls:HighlightValueView Name="{x:Static resx:Strings.GradesCountLabel}"
+                                                 Value="{Binding Subject.Grades.Count}" />
+                </StackLayout>
+            </ScrollView>
             <CollectionView
                 ItemsSource="{Binding Subject.Grades}"
                 BackgroundColor="{AppThemeBinding Light={StaticResource LightPanelColor}, Dark={StaticResource DarkPanelColor}}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="grades:Grade">
-                        <StackLayout Padding="0, 1" 
+                        <StackLayout Padding="0, 1"
                                      xct:TouchEffect.IsAvailable="{Binding Source={RelativeSource AncestorType={x:Type subjectDetails:GradesSubjectDetailsViewModel}}, Path=CanShare}"
                                      xct:TouchEffect.LongPressCommand="{Binding Source={RelativeSource AncestorType={x:Type subjectDetails:GradesSubjectDetailsViewModel}}, Path=ShareGrade}"
                                      xct:TouchEffect.LongPressCommandParameter="{Binding .}"
@@ -66,7 +85,8 @@
                                     TextColor="{Binding Column.Color, Converter={StaticResource GradeColorConverter}, ConverterParameter={AppThemeBinding Dark={StaticResource DarkPrimaryTextColor}, Light={StaticResource LightPrimaryTextColor}}}"
                                     Text="{Binding Content}"
                                     LineBreakMode="TailTruncation" />
-                                <StackLayout Grid.Column="1" Orientation="Vertical" Spacing="0" BackgroundColor="Transparent">
+                                <StackLayout Grid.Column="1" Orientation="Vertical" Spacing="0"
+                                             BackgroundColor="Transparent">
                                     <Label FontSize="Small" FontAttributes="Bold"
                                            Text="{Binding Column.Name, Converter={StaticResource FallbackStringConverter}, ConverterParameter={x:Static resx:Strings.GradeEmptyNameLabel}}" />
                                     <StackLayout Orientation="Horizontal" BackgroundColor="Transparent">
