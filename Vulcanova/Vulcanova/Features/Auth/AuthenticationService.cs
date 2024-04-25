@@ -54,9 +54,12 @@ public class AuthenticationService : IAuthenticationService
 
         var registerHebeResponse = await client.GetAsync(RegisterHebeClientQuery.ApiEndpoint, new RegisterHebeClientQuery());
 
-        var accounts = registerHebeResponse.Envelope.Select(_mapper.Map<Account>).ToArray();
+        var accounts = registerHebeResponse.Envelope
+            .Where(a => a.Login != null && a.Periods is { Length: > 0 })
+            .Select(_mapper.Map<Account>)
+            .ToArray();
 
-        foreach (var account in accounts.Where(a => a.Login != null && a.Periods != null))
+        foreach (var account in accounts)
         {
             // in some rare cases, the data will contain duplicated periods
             account.Periods = account.Periods.GroupBy(p => p.Id).Select(g => g.First()).ToList();
