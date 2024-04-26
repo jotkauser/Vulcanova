@@ -143,7 +143,7 @@ public class GradesSummaryViewModel : ViewModelBase
                     SubjectName = g.Key.Name,
                     Average = CalculateAverage(g.Key.Id, selectedPeriodGrades, averageGradesArray, settings),
                     AnnualAverage = CalculateAverage(g.Key.Id,
-                        g.Select(x => x.Grade), averageGradesArray,
+                        g.Select(x => x.Grade), Array.Empty<AverageGrade>(),
                         settings),
                     Grades = new ObservableCollection<Grade>(selectedPeriodGrades)
                 };
