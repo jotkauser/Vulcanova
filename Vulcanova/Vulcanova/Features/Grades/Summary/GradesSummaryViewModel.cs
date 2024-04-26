@@ -141,17 +141,15 @@ public class GradesSummaryViewModel : ViewModelBase
                 {
                     SubjectId = g.Key.Id,
                     SubjectName = g.Key.Name,
-                    Average = CalculateAverage(g.Key.Id, selectedPeriodGrades, averageGradesArray, settings),
-                    AnnualAverage = CalculateAverage(g.Key.Id,
-                        g.Select(x => x.Grade), Array.Empty<AverageGrade>(),
-                        settings),
+                    Average = CalculatePartialGradesAverage(g.Key.Id, selectedPeriodGrades, averageGradesArray, settings),
+                    AnnualAverage = g.Select(x => x.Grade).Average(settings.Modifiers),
                     Grades = new ObservableCollection<Grade>(selectedPeriodGrades)
                 };
             })
             .Where(x => x.Grades.Count > 0);
     }
 
-    private static decimal? CalculateAverage(int subjectId, IEnumerable<Grade> grades,
+    private static decimal? CalculatePartialGradesAverage(int subjectId, IEnumerable<Grade> grades,
         IEnumerable<AverageGrade> averageGrades, AppSettings settings)
     {
         if (settings.ForceAverageCalculationByApp)
